@@ -1,0 +1,24 @@
+## Docker Compose for Forgejo
+## Based on https://forgejo.org/docs/latest/admin/installation-docker/#docker
+
+networks:
+  forgejo:
+    external: false
+
+services:
+  server:
+    image: codeberg.org/forgejo/forgejo:9
+    container_name: forgejo
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    restart: always
+    networks:
+      - forgejo
+    volumes:
+      - ./forgejo:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - '3002:3000'  ## Web Server will be exposed at HTTP Port 3002
+      - '222:22'
