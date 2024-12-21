@@ -16,15 +16,24 @@ cd $tmp_dir
 git clone https://nuttx-forge.org/nuttx/nuttx-mirror upstream
 git clone git@nuttx-forge:nuttx/nuttx-update downstream
 
-## Find out which Commit to begin
+## Find the First Commit to Sync
 pushd downstream
-commit=$(git rev-parse HEAD)
+downstream_commit=$(git rev-parse HEAD)
 popd
+pushd upstream
+upstream_commit=$(git rev-parse HEAD)
+popd
+
+## If no new Commits to Sync: Quit
+if [[ "$downstream_commit" == "$upstream_commit" ]]; then
+  set +x ; echo "**** No New Commits to Sync" ; set -x
+  exit
+fi
 
 ## Emit the Commit Patches for Upstream Repo
 pushd upstream
 git format-patch \
-  $commit..HEAD \
+  $downstream_commit..HEAD \
   --stdout \
   >$tmp_dir/commit.patch
 cat $tmp_dir/commit.patch
