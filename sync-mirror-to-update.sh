@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
 ## Sync the Git Commits from NuttX Mirror Repo to NuttX Update Repo
+## We use Git Bundles to preserve the Commit Hash. (Git Diff and Git Format Patch won't preserve the Committer Info!)
+## Based on https://stackoverflow.com/a/12884254
 
 set -e  ## Exit when any command fails
 set -x  ## Echo commands
-
-## Get the Script Directory
-script_path="${BASH_SOURCE}"
-script_dir="$(cd -P "$(dirname -- "${script_path}")" >/dev/null 2>&1 && pwd)"
 
 ## Checkout the Upstream and Downstream Repos
 tmp_dir=/tmp/sync-mirror-to-update
@@ -34,19 +32,16 @@ if [[ "$downstream_commit" == "$upstream_commit" ]]; then
   exit
 fi
 
-## Emit the Commit Patches for Upstream Repo
+## Emit the Commit Bundle for Upstream Repo
 pushd upstream
-git format-patch \
-  $downstream_commit..HEAD \
-  --stdout \
-  >$tmp_dir/commit.patch
-cat $tmp_dir/commit.patch
+git bundle create \
+  $tmp_dir/commit.bundle \
+  --branches --tags
 popd
 
-## Apply the Commit Patches to Downstream Repo
+## Apply the Commit Bundle to Downstream Repo
 pushd downstream
-git am \
-  $tmp_dir/commit.patch
+git pull $tmp_dir/commit.bundle master
 git status
 popd
 
@@ -68,3 +63,5 @@ if [[ "$downstream_commit2" != "$upstream_commit" ]]; then
   set +x ; echo "**** Sync Failed: Upstream and Downstream Commits don't match!" ; set -x
   exit 1
 fi
+
+set +x ; echo "**** Done!" ; set -x
