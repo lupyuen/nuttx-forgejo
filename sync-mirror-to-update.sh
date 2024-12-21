@@ -14,7 +14,7 @@ rm -rf $tmp_dir
 mkdir $tmp_dir
 cd $tmp_dir
 git clone https://nuttx-forge.org/nuttx/nuttx-mirror upstream
-git clone https://nuttx-forge.org/nuttx/nuttx-update downstream
+git clone git@nuttx-forge:nuttx/nuttx-update downstream
 
 ## Find out which Commit to begin
 pushd downstream
@@ -34,6 +34,7 @@ popd
 pushd downstream
 ## git am \
 ##   $tmp_dir/commit.patch
+git status
 popd
 
 ## Commit the Patched Downstream Repo
