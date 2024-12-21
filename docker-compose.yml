@@ -16,9 +16,15 @@ services:
     networks:
       - forgejo
     volumes:
-      - ./forgejo:/data
+      ## Mount the Forgejo Volume for Docker, because macOS Rancher Desktop doesn't allow setting ownership for Local Filesystem
+      - forgejo-data:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     ports:
-      - '3002:3000'  ## Web Server will be exposed at HTTP Port 3002
+      ## Web Server will be exposed at HTTP Port 3002
+      - '3002:3000'
       - '222:22'
+
+## Define the Forgejo Volume for Docker
+volumes:
+  forgejo-data:
