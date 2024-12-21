@@ -13,15 +13,19 @@ tmp_dir=/tmp/sync-mirror-to-update
 rm -rf $tmp_dir
 mkdir $tmp_dir
 cd $tmp_dir
-git clone https://nuttx-forge.org/nuttx/nuttx-mirror upstream
+git clone git@nuttx-forge:nuttx/nuttx-mirror upstream
 git clone git@nuttx-forge:nuttx/nuttx-update downstream
 
 ## Find the First Commit to Sync
-pushd downstream
-downstream_commit=$(git rev-parse HEAD)
-popd
+set +x ; echo "**** Last Upstream Commit" ; set -x
 pushd upstream
 upstream_commit=$(git rev-parse HEAD)
+git --no-pager log -1
+popd
+set +x ; echo "**** Last Downstream Commit" ; set -x
+pushd downstream
+downstream_commit=$(git rev-parse HEAD)
+git --no-pager log -1
 popd
 
 ## If no new Commits to Sync: Quit
