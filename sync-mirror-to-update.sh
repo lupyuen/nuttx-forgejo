@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 ## Sync the Git Commits from NuttX Mirror Repo to NuttX Update Repo
-## We use Git Bundles to preserve the Commit Hash. (Git Diff and Git Format Patch won't preserve the Committer Info!)
-## Based on https://stackoverflow.com/a/12884254
 
 set -e  ## Exit when any command fails
 set -x  ## Echo commands
@@ -32,16 +30,9 @@ if [[ "$downstream_commit" == "$upstream_commit" ]]; then
   exit
 fi
 
-## Emit the Commit Bundle for Upstream Repo
-pushd upstream
-git bundle create \
-  $tmp_dir/commit.bundle \
-  --branches --tags
-popd
-
-## Apply the Commit Bundle to Downstream Repo
+## Apply the Upstream Commits to Downstream Repo
 pushd downstream
-git pull $tmp_dir/commit.bundle master
+git pull git@nuttx-forge:nuttx/nuttx-mirror master
 git status
 popd
 
