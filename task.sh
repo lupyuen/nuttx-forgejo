@@ -1,15 +1,9 @@
 #!/usr/bin/env bash
 
-set -e  ## Exit when any command fails
+set +e  ## Ignore errors
 set -x  ## Echo commands
 
-function sync {
+for (( ; ; )); do
   $HOME/nuttx-forgejo/sync-mirror-to-update.sh
-}
-
-for (( ; ; ))
-do
-  sync
-  date
-  sleep 10
+  date ; sleep 600
 done
